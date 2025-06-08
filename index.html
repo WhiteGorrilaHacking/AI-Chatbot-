@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    <base href="/AI-Chatbot-/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chat Assistant</title>
@@ -564,7 +564,7 @@
         input.focus();
 
         try {
-            const response = await fetch('http://localhost:11434/api/chat', {
+            const response = await fetch('http://whitegorrilahacking.github.io/AI-Chatbot-/api/chat', { // Replace with your deployed API URL
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -616,7 +616,7 @@
         // Function to fetch and populate models
         async function fetchModels() {
             try {
-                const response = await fetch('http://localhost:11434/api/tags');
+                const response = await fetch('YOUR_OLLAMA_API_URL/api/tags'); // Replace with your deployed API URL
                 const data = await response.json();
 
                 // Clear existing options
@@ -697,5 +697,3 @@
     </script>
 </body>
 </html>
-
-
