@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chat Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
     <style>
         /* Light mode styles (default) */
         body {
@@ -502,7 +504,7 @@
 
         <div class="chat-messages" id="chatMessages">
             <div class="welcome-message">
-                <h3>Welcome to AI Chat!</h3>
+                <h3>Welcome to OffGrid AI!</h3>
                 <p>Start a conversation by typing a message below. I'm here to help with questions, provide information, or just have a friendly chat!</p>
             </div>
         </div>
@@ -577,6 +579,7 @@
             });
             const data = await response.json();
             const aiReply = data.message?.content || "No response from AI.";
+            const aiReplyCleaned = aiReply.replace(/\*/g, '');
 
             // Hide typing indicator
             typingIndicator.classList.remove('visible');
@@ -584,7 +587,7 @@
             // Display bot message
             const botMsgDiv = document.createElement('div');
             botMsgDiv.className = 'message bot';
-            botMsgDiv.innerHTML = `<div class="message-content">${aiReply}</div>`;
+            botMsgDiv.innerHTML = `<div class="message-content">${aiReplyCleaned}</div>`;
             chatMessages.appendChild(botMsgDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         } catch (error) {
