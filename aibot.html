@@ -533,11 +533,8 @@
     </div>
 
     <script>
-   
-    document.getElementById('currentProfileDisplay').textContent = 'Select Profile'; // Default text
-    
-    
-
+    let currentProfile = { name: 'gemma3', systemPrompt: '' }; // Default profile
+    document.getElementById('currentProfileDisplay').textContent = currentProfile.name; // Default text
     // Handle Enter key for sending messages
     document.getElementById('chatInput').addEventListener('keydown', function(event) {
         if (event.key === 'Enter' && !event.shiftKey) {
@@ -570,10 +567,10 @@
 
         try {
             const messages = [{ role: "user", content: message }];
-           // if (currentProfile.systemPrompt) {
-             //   messages.unshift({ role: "system", content: currentProfile.systemPrompt });
-            //}
-            //console.log("Messages array:", messages); // Debugging
+            if (currentProfile.systemPrompt) {
+               messages.unshift({ role: "system", content: currentProfile.systemPrompt });
+            }
+            console.log("Messages array:", messages); // Debugging
 
             const response = await fetch('http://localhost:11434/api/chat', {
                 method: 'POST',
