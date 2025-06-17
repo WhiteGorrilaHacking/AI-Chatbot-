@@ -11,7 +11,7 @@
         /* Light mode styles (default) */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f3bb2f 0%, #e05840 100%);
+            background: linear-gradient(135deg, #0bf8ec 0%, #998cc9 100%);
             color: #333; /* Default text color for light mode */
             min-height: 100vh;
             display: flex;
@@ -66,7 +66,7 @@
         }
 
         .chat-header {
-        background: linear-gradient(135deg, #8eeb92 0%, #ec0999 100%);
+        background: linear-gradient(135deg, #0adbd1 0%, #1422e0 100%);
         padding: 20px;
         color: white;
         text-align: center;
@@ -163,7 +163,7 @@
     }
 
     .message.user .message-content {
-        background: linear-gradient(135deg, #e086d2 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #5c53af 0%, #00f2fe 100%);
         color: white;
         border-bottom-right-radius: 4px;
     }
@@ -204,12 +204,12 @@
     }
 
     .chat-input:focus {
-        border-color: #f187e3;
-        box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        border-color: #4400fd;
+        box-shadow: 0 0 0 3px rgba(118, 167, 211, 0.1);
     }
 
     .send-button {
-        background: linear-gradient(135deg, #4facfe 0%, #00fe87 100%);
+        background: linear-gradient(135deg, #4facfe 0%, #0e89fc 100%);
         color: white;
         border: none;
         border-radius: 50%;
@@ -225,7 +225,7 @@
 
     .send-button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        box-shadow: 0 6px 20px rgba(160, 181, 199, 0.4);
     }
 
     .send-button:active {
@@ -237,6 +237,36 @@
         cursor: not-allowed;
         transform: none;
     }
+
+    .send-button.loading {
+    background: #007bff; /* Blue background for loading state */
+    cursor: not-allowed;
+    position: relative;
+}
+
+.send-button.loading::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top: 2px solid #0056b3; /* Darker blue for spinner */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Spinner animation */
+@keyframes spin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
 
     .typing-indicator {
         display: flex;
@@ -344,7 +374,7 @@
 
     .profile-dropdown-content a:hover {
         
-        background-color: #a98cff;
+        background-color: #215557;
     }
 
     .profile-dropdown:hover .profile-dropdown-content {
@@ -450,7 +480,7 @@
 
         /* Dark mode send button */
         body.dark-mode .send-button {
-            background: linear-gradient(135deg, #ff8800 0%, #c63aff 100%);
+            background: linear-gradient(135deg, #003cff 0%, #b700ff 100%);
             box-shadow: 0 4px 12px rgba(255, 136, 0, 0.3);
         }
 
@@ -469,6 +499,156 @@
         }
 
     }
+
+    /* Modern delete button styles */
+.profile-dropdown-content a button {
+    background: #ff4d4d; /* Red background for delete */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 10px; /* Space between text and button */
+}
+
+.profile-dropdown-content a button:hover {
+    background: #ff6666; /* Lighter red on hover */
+    box-shadow: 0 4px 8px rgba(255, 77, 77, 0.3); /* Add shadow effect */
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.profile-dropdown-content a button:active {
+    background: #cc0000; /* Darker red on click */
+    transform: translateY(0); /* Reset lift on click */
+    box-shadow: 0 2px 4px rgba(255, 77, 77, 0.2); /* Reduced shadow */
+}
+
+/* Modal background overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Show modal when active */
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal container */
+.modal {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Modal header */
+.modal h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+/* Input field */
+.modal input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.modal input:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+}
+
+/* Buttons */
+.modal button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal button.create {
+    background: #4caf50;
+    color: white;
+}
+
+.modal button.create:hover {
+    background: #45a049;
+}
+
+.modal button.cancel {
+    background: #f44336;
+    color: white;
+    margin-left: 10px;
+}
+
+.modal button.cancel:hover {
+    background: #e53935;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Logout button styles */
+.logout-button {
+    position: absolute;
+    top: 20px;
+    right: 80px; /* Adjust as needed */
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.logout-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.logout-button:active {
+    transform: translateY(0);
+}
 </style>
 
 
@@ -532,6 +712,22 @@
         </div>
     </div>
 
+    <!-- Modal for creating a new profile -->
+    <div class="modal-overlay" id="createProfileModal">
+        <div class="modal">
+            <h3>Create New Profile</h3>
+            <input type="text" id="newProfileName" placeholder="Enter profile name" />
+            <div class="modal-buttons">
+                <button class="create" id="createProfileButton">Create</button>
+                <button class="cancel" id="cancelProfileButton">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="logout-button" id="logoutButton" aria-label="Logout" title="Logout">
+    Logout
+</button>
+
     <script>
     let currentProfile = { name: 'gemma3', systemPrompt: '' }; // Default profile
     document.getElementById('currentProfileDisplay').textContent = currentProfile.name; // Default text
@@ -546,14 +742,17 @@
     // Handle Send button click
     document.getElementById('sendButton').addEventListener('click', async function() {
         const input = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
         const message = input.value.trim();
         if (!message) return;
 
         const chatMessages = document.getElementById('chatMessages');
         const typingIndicator = document.getElementById('typingIndicator');
 
-        // Show typing indicator
+        // Show typing indicator and set loading state for the button
         typingIndicator.classList.add('visible');
+        sendButton.disabled = true;
+        sendButton.classList.add('loading');
 
         // Display user message
         const userMsgDiv = document.createElement('div');
@@ -568,40 +767,41 @@
         try {
             const messages = [{ role: "user", content: message }];
             if (currentProfile.systemPrompt) {
-               messages.unshift({ role: "system", content: currentProfile.systemPrompt });
+                messages.unshift({ role: "system", content: currentProfile.systemPrompt });
             }
-            console.log("Messages array:", messages); // Debugging
 
             const response = await fetch('http://localhost:11434/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: currentProfile.name, // Use currentProfile here
-                    messages: [
-                        { role: "user", content: message },
-                    ],
+                    model: currentProfile.name,
+                    messages: messages,
                     stream: false
                 })
             });
-            console.log("API response status:", response.status); // Debugging
+
             const data = await response.json();
             const aiReply = data.message?.content || "No response from AI.";
-            console.log("API response:", data); // Debugging
-            
-            const aiReplyCleaned = aiReply.replace(/\*/g, '');
-            // Hide typing indicator
+
+            // Hide typing indicator and reset button state
             typingIndicator.classList.remove('visible');
+            sendButton.disabled = false;
+            sendButton.classList.remove('loading');
 
             // Display bot message
             const botMsgDiv = document.createElement('div');
             botMsgDiv.className = 'message bot';
-            botMsgDiv.innerHTML = `<div class="message-content">${aiReplyCleaned}</div>`;
+            botMsgDiv.innerHTML = `<div class="message-content">${aiReply}</div>`;
             chatMessages.appendChild(botMsgDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         } catch (error) {
-            console.error("Fetch error:", error); // Debugging
-            // Hide typing indicator on error as well
+            console.error("Fetch error:", error);
+
+            // Hide typing indicator and reset button state on error
             typingIndicator.classList.remove('visible');
+            sendButton.disabled = false;
+            sendButton.classList.remove('loading');
+
             const botMsgDiv = document.createElement('div');
             botMsgDiv.className = 'message bot';
             botMsgDiv.innerHTML = `<div class="message-content">Error: ${error.message}</div>`;
@@ -742,12 +942,16 @@
         const body = document.body;
         const chatContainer = document.querySelector('.chat-container');
         const chatInputContainer = document.querySelector('.chat-input-container');
+        const chatMessages = document.querySelector('.chat-messages');
+        const chatHeader = document.querySelector('.chat-header');
 
         // Function to toggle dark mode
         function toggleDarkMode() {
             body.classList.toggle('dark-mode');
             chatContainer.classList.toggle('dark-mode');
             chatInputContainer.classList.toggle('dark-mode');
+            chatMessages.classList.toggle('dark-mode');
+            chatHeader.classList.toggle('dark-mode');
 
             // Store the user's preference in localStorage
             if (body.classList.contains('dark-mode')) {
@@ -760,12 +964,17 @@
         // Check if dark mode was previously enabled
         if (localStorage.getItem('darkMode') === 'enabled') {
             checkbox.checked = true;
-            toggleDarkMode();
+            toggleDarkMode(); // Apply dark mode on page load
         }
-        console.log(data.message?.content); // Debugging
+
         // Event listener for the checkbox
         checkbox.addEventListener('change', toggleDarkMode);
     });
+
+    document.getElementById('logoutButton').addEventListener('click', function() {
+    // Redirect to the login page
+    window.location.href = 'login.html'; // Replace 'login.html' with the actual path to your login page
+});
     </script>
 </body>
 </html>
