@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>OffGrid AI – Login</title>
+<title>OffGrid AI – Create Account</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 <style>
   body {
@@ -19,7 +20,6 @@
     position: relative;
   }
 
-
   .dot {
     position: absolute;
     width: 6px;
@@ -31,7 +31,6 @@
     filter: drop-shadow(0 0 4px #00bbff);
     transform-origin: center center;
   }
-
 
   .dot:nth-child(1)  { top:  5%;  left:  8%;  animation-delay:  0s; }
   .dot:nth-child(2)  { top: 12%;  left: 18%;  animation-delay:  0.7s; }
@@ -72,7 +71,7 @@
     100% { transform: translate(0, 0) rotate(720deg) scale(1); opacity: 0.15; }
   }
 
-  .login-container {
+  .signup-container {
     background: #121230;
     border-radius: 24px;
     padding: 48px;
@@ -111,6 +110,7 @@
     color: #eee;
     font-size: 14px;
     transition: border 0.2s ease;
+    box-sizing: border-box;
   }
 
   input:focus {
@@ -118,22 +118,7 @@
     outline: none;
   }
 
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    font-size: 13px;
-    color: #ccc;
-  }
-
-  .actions label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .login-button {
+  .signup-button {
     width: 100%;
     padding: 14px;
     background: linear-gradient(to right, #007acc, #00aaff);
@@ -144,9 +129,10 @@
     font-size: 15px;
     cursor: pointer;
     transition: opacity 0.3s ease;
+    margin-bottom: 24px;
   }
 
-  .login-button:hover {
+  .signup-button:hover {
     opacity: 0.9;
   }
 
@@ -187,121 +173,32 @@
     margin-top: 28px;
   }
 
-  .create-account {
+  .login-link {
     color: #00aaff;
     text-decoration: none;
     font-weight: 600;
   }
 
-  .forgot-password {
-    color: #666;
-    text-decoration: none;
-  }
-
-  .forgot-password-link {
-    color: #666;
-    text-decoration: none;
-  }
-
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-
-  .modal-content {
-    background: #121230;
-    margin: 15% auto;
-    padding: 32px;
-    border: 1px solid #007acc;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 400px;
-    color: #eee;
-    position: relative;
-  }
-
-  .close-modal {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    position: absolute;
-    right: 16px;
-    top: 16px;
-  }
-
-  .close-modal:hover {
-    color: #00aaff;
-  }
-
-  .modal h2 {
-    color: #00aaff;
-    margin-bottom: 16px;
-    text-align: center;
-  }
-
-  .modal p {
-    color: #ccc;
-    margin-bottom: 20px;
-    text-align: center;
-    font-size: 14px;
-  }
-
-  .modal input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 16px;
-    background: #1f1f40;
-    border: 1px solid #005bbb;
-    border-radius: 8px;
-    color: #eee;
-    font-size: 14px;
-    box-sizing: border-box;
-  }
-
-  .modal-button {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(to right, #007acc, #00aaff);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: opacity 0.3s ease;
-  }
-
-  .modal-button:hover {
-    opacity: 0.9;
-  }
-
-  .modal-message {
+  .error-message {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    color: #ff9999;
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 16px;
     font-size: 13px;
-    text-align: center;
     display: none;
   }
 
-  .modal-error {
-    background: rgba(255, 0, 0, 0.1);
-    border: 1px solid rgba(255, 0, 0, 0.3);
-    color: #ff9999;
-  }
-
-  .modal-success {
+  .success-message {
     background: rgba(0, 255, 0, 0.1);
     border: 1px solid rgba(0, 255, 0, 0.3);
     color: #99ff99;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    display: none;
   }
 
   .password-input-container {
@@ -310,7 +207,7 @@
   }
 
   .password-input-container input {
-    padding-right: 18px;
+    padding-right: 40px;
   }
 
   .password-toggle {
@@ -350,14 +247,27 @@
   <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
   <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
 
-  <div class="login-container">
+  <div class="signup-container">
     <div class="logo">OffGrid AI</div>
-    <div class="tagline">CRAFTED FOR THE VISIONARY</div>
+    <div class="tagline">JOIN THE VISIONARIES</div>
 
+    <div class="error-message" id="errorMessage"></div>
+    <div class="success-message" id="successMessage"></div>
+
+    <input type="text" id="fullName" placeholder="Full Name" />
     <input type="email" id="email" placeholder="Email Address" />
     <div class="password-input-container">
       <input type="password" id="password" placeholder="Password" />
-      <button type="button" class="password-toggle" aria-label="Show or hide password" onclick="togglePasswordVisibility('password', this)">
+      <button type="button" class="password-toggle" title="Show or hide password" onclick="togglePasswordVisibility('password', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
+    <div class="password-input-container">
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+      <button type="button" class="password-toggle" title="Show or hide password" onclick="togglePasswordVisibility('confirmPassword', this)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <circle cx="12" cy="12" r="3"></circle>
@@ -365,153 +275,100 @@
       </button>
     </div>
 
-    <div class="actions">
-      <label><input type="checkbox" /> Remember Me</label>
-      <a href="#" class="forgot-password-link" onclick="showForgotPasswordModal()">Forgot Password?</a>
-    </div>
-
-    <button class="login-button" onclick="handleLogin()">Login ➤</button>
+    <button class="signup-button" onclick="handleSignup()">Create Account ➤</button>
 
     <div class="divider">— or —</div>
 
     <div class="alt-login">
-      <button>Sign in with Google</button>
-      <button>Sign in with Apple</button>
+      <button>Sign up with Google</button>
+      <button>Sign up with Apple</button>
     </div>
 
     <div class="footer">
-      New here? <a href="signup.html" class="create-account">Create Account →</a>
+      Already have an account? <a href="login.html" class="login-link">Sign In →</a>
       <br /><br />
       <span>Powered by OffGrid Core</span>
     </div>
   </div>
 
-  <!-- Forgot Password Modal -->
-  <div id="forgotPasswordModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
-      <h2>Reset Password</h2>
-      <p>Enter your email address to reset your password</p>
-
-      <div class="modal-message modal-error" id="modalError"></div>
-      <div class="modal-message modal-success" id="modalSuccess"></div>
-
-      <input type="email" id="resetEmail" placeholder="Email Address" />
-      <button class="modal-button" onclick="handlePasswordReset()">Send Reset Instructions</button>
-    </div>
-  </div>
-
   <script>
-    function handleLogin() {
+    function handleSignup() {
+      const fullName = document.getElementById('fullName').value;
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const errorMessage = document.getElementById('errorMessage');
+      const successMessage = document.getElementById('successMessage');
 
-      if (!email || !password) {
-        alert('Please enter both email and password');
+      // Clear previous messages
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+
+      // Basic validation
+      if (!fullName || !email || !password || !confirmPassword) {
+        showError('Please fill in all fields');
         return;
       }
 
-      // Check if user exists in localStorage
-      let userData = localStorage.getItem('userData');
-      if (userData) {
-        userData = JSON.parse(userData);
-        if (userData.email === email && userData.password === password) {
-          // Successful login
-          localStorage.setItem('currentUser', JSON.stringify(userData));
-          window.location.href = 'index.html';
-          return;
-        }
+      if (password !== confirmPassword) {
+        showError('Passwords do not match');
+        return;
       }
 
-      // Invalid credentials
-      alert('Invalid email or password');
-    }
-
-    function showForgotPasswordModal() {
-      document.getElementById('forgotPasswordModal').style.display = 'block';
-      document.getElementById('resetEmail').value = '';
-      hideModalMessages();
-    }
-
-    function closeForgotPasswordModal() {
-      document.getElementById('forgotPasswordModal').style.display = 'none';
-    }
-
-    function hideModalMessages() {
-      document.getElementById('modalError').style.display = 'none';
-      document.getElementById('modalSuccess').style.display = 'none';
-    }
-
-    function showModalError(message) {
-      const errorElement = document.getElementById('modalError');
-      errorElement.textContent = message;
-      errorElement.style.display = 'block';
-      document.getElementById('modalSuccess').style.display = 'none';
-    }
-
-    function showModalSuccess(message) {
-      const successElement = document.getElementById('modalSuccess');
-      successElement.textContent = message;
-      successElement.style.display = 'block';
-      document.getElementById('modalError').style.display = 'none';
-    }
-
-    function handlePasswordReset() {
-      const email = document.getElementById('resetEmail').value;
-
-      if (!email) {
-        showModalError('Please enter your email address');
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters long');
         return;
       }
 
       // Email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        showModalError('Please enter a valid email address');
+        showError('Please enter a valid email address');
         return;
       }
 
-      // Check if user exists
-      let userData = localStorage.getItem('userData');
-      if (!userData) {
-        showModalError('No account found with this email address');
-        return;
-      }
+      // Simulate account creation
+      createAccount(fullName, email, password);
+    }
 
-      userData = JSON.parse(userData);
-      if (userData.email !== email) {
-        showModalError('No account found with this email address');
-        return;
-      }
+    function createAccount(fullName, email, password) {
+      // In a real application, you would send this data to your backend
+      // For now, we'll simulate success and store user data locally
 
-      // Generate a simple temporary password
-      const tempPassword = 'temp' + Math.random().toString(36).substr(2, 6);
+      const userData = {
+        fullName: fullName,
+        email: email,
+        password: password, // In reality, never store passwords in plain text
+        createdAt: new Date().toISOString()
+      };
 
-      // Update user data with temporary password
-      userData.password = tempPassword;
-      userData.isTemporaryPassword = true;
+      // Store user data in localStorage (for demo purposes)
       localStorage.setItem('userData', JSON.stringify(userData));
 
-      showModalSuccess(`Password reset successful! Your temporary password is: ${tempPassword}. Please use this to log in and change your password immediately.`);
+      showSuccess('Account created successfully! Redirecting to login...');
 
-      // Auto-close modal after 8 seconds
+      // Redirect to login page after 2 seconds
       setTimeout(() => {
-        closeForgotPasswordModal();
-      }, 8000);
+        window.location.href = 'login.html';
+      }, 2000);
     }
 
-    // Close modal when clicking outside of it
-    window.onclick = function(event) {
-      const modal = document.getElementById('forgotPasswordModal');
-      if (event.target === modal) {
-        closeForgotPasswordModal();
-      }
+    function showError(message) {
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
     }
 
-    // Handle Enter key in modal
-    document.getElementById('resetEmail').addEventListener('keydown', function(event) {
+    function showSuccess(message) {
+      const successMessage = document.getElementById('successMessage');
+      successMessage.textContent = message;
+      successMessage.style.display = 'block';
+    }
+
+    // Handle Enter key for creating account
+    document.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
-        handlePasswordReset();
+        handleSignup();
       }
     });
 
