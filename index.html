@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html>
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AI Chat Assistant</title>
+    <meta name="viewport" content="width=device-width">
+    <title>OffGrid AI</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
@@ -59,12 +58,55 @@
             outline-offset: 2px;
         }
 
-       
+        /* Settings panel */
+        .settings-panel {
+            position: absolute;
+            top: 20px;
+            right: 200px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            z-index: 3;
+            display: none;
+        }
 
+        .settings-panel.active {
+            display: block;
+        }
 
-     
+        .settings-group {
+            margin-bottom: 10px;
+        }
 
+        .settings-group label {
+            display: block;
+            color: white;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
 
+        .settings-group select,
+        .settings-group input {
+            width: 100%;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 11px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
 
         /* Light mode styles (default) */
         body {
@@ -782,9 +824,54 @@
                 <!-- Models will be populated here -->
             </div>
         </div>
-        
-   
-               
+        <!-- Settings button -->
+        <button class="settings-button" id="settingsButton" aria-label="Settings" title="Settings">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                </path>
+            </svg>
+        </button>
+
+        <!-- Settings panel -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-group">
+                <label data-i18n="theme.select">Select Theme</label>
+                <select id="themeSelect">
+                    <option value="default-light">Default Light</option>
+                    <option value="default-dark">Default Dark</option>
+                    <option value="ocean">Ocean Blue</option>
+                    <option value="sunset">Sunset Orange</option>
+                </select>
+            </div>
+
+            <div class="settings-group">
+                <label>Language</label>
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="de">Deutsch</option>
+                </select>
+            </div>
+
+            <div class="settings-group">
+                <label>Accessibility</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="highContrastCheck">
+                    <label for="highContrastCheck" data-i18n="accessibility.highContrast">High Contrast</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="largeTextCheck">
+                    <label for="largeTextCheck" data-i18n="accessibility.largeText">Large Text</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="screenReaderCheck">
+                    <label for="screenReaderCheck" data-i18n="accessibility.screenReader">Screen Reader Mode</label>
+                </div>
+            </div>
+        </div>
 
         <div class="chat-messages" id="chatMessages">
             <div class="welcome-message">
