@@ -1,1 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        /* Light mode styles (default) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0bf8ec 0%, #998cc9 100%);
+            color: #333; /* Default text color for light mode */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s; /* Smooth transition for mode switch */
+        }
+
+        .clear-chat-button {
+        position: absolute;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .clear-chat-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-50%) translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .clear-chat-button:active {
+        transform: translateY(-50%) translateY(0);
+    }
+        .chat-container {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+            transition: background 0.3s, box-shadow 0.3s; /* Smooth transition for mode switch */
+        }
+
+        .chat-header {
+        background: linear-gradient(135deg, #0adbd1 0%, #1422e0 100%);
+        padding: 20px;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .chat-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .chat-header h1 {
+        font-size: 24px;
+        margin-bottom: 5px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .chat-header p {
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
+
+    .status-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #4ade80;
+        border-radius: 50%;
+        margin-right: 8px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .message {
+        display: flex;
+        animation: messageSlide 0.4s ease-out;
+    }
+
+    @keyframes messageSlide {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message.user {
+        justify-content: flex-end;
+    }
+
+    .message-content {
+        max-width: 70%;
+        padding: 12px 16px;
+        border-radius: 18px;
+        word-wrap: break-word;
+        position: relative;
+    }
+
+    .message.bot .message-content {
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        color: #374151;
+        border-bottom-left-radius: 4px;
+    }
+
+    .message.user .message-content {
+        background: linear-gradient(135deg, #5c53af 0%, #00f2fe 100%);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+
+    .timestamp {
+        font-size: 11px;
+        opacity: 0.7;
+        margin-top: 4px;
+    }
+
+    .chat-input-container {
+        padding: 20px;
+        background: rgba(248, 250, 252, 0.8);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(226, 232, 240, 0.5);
+        transition: background 0.3s, border-top 0.3s; /* Smooth transition for mode switch */
+    }
+
+    .chat-input-wrapper {
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 25px;
+        outline: none;
+        font-size: 14px;
+        resize: none;
+        max-height: 100px;
+        min-height: 44px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .chat-input:focus {
+        border-color: #4400fd;
+        box-shadow: 0 0 0 3px rgba(118, 167, 211, 0.1);
+    }
+
+    .send-button {
+        background: linear-gradient(135deg, #4facfe 0%, #0e89fc 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+    }
+
+    .send-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(160, 181, 199, 0.4);
+    }
+
+    .send-button:active {
+        transform: translateY(0);
+    }
+
+    .send-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .send-button.loading {
+    background: #007bff; /* Blue background for loading state */
+    cursor: not-allowed;
+    position: relative;
+}
+
+.send-button.loading::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top: 2px solid #0056b3; /* Darker blue for spinner */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Spinner animation */
+@keyframes spin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+    .typing-indicator {
+        display: flex;
+        align-content: left;
+        align-self: start;
+        align-items: left;
+        justify-content: left; /* Add this line */
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        padding: 10px 20px;
+    }
+
+    .typing-indicator.visible {
+        opacity: 1;
+    }
+
+    .typing-dot {
+        align-items: left;
+        width: 8px;
+        height: 8px;
+        background: #9ca3af;
+        border-radius: 50%;
+        animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-10px); }
+    }
+
+    .welcome-message {
+        text-align: center;
+        color: #6b7280;
+        padding: 40px 20px;
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        margin: 20px 0;
+    }
+
+    .welcome-message h3 {
+        margin-bottom: 8px;
+        color: #374151;
+    }
+
+    .clear-button {
+        background: #ddd;
+        color: #333;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .clear-button:hover {
+        background-color: #ccc;
+    }
+
+    .profile-dropdown {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 2;
+    }
+
+    .profile-dropdown-button {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .profile-dropdown-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        padding: 10px 0;
+        z-index: 1;
+    }
+
+    .profile-dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        transition: background-color 0.3s ease;
+    }
+
+    .profile-dropdown-content a:hover {
+        
+        background-color: #215557;
+    }
+
+    .profile-dropdown:hover .profile-dropdown-content {
+        display: block;
+    }
+
+    .current-model-display {
+        position: absolute;
+        top: 20px;
+        left: 180px; /* Adjust as needed */
+        z-index: 2;
+    }
+
+    .current-model-display input {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12px;
+        width: 150px; /* Adjust as needed */
+        text-align: center;
+    }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #222 0%, #444 100%);
+            color: #eee; /* Text color for dark mode */
+        }
+
+        .chat-container.dark-mode {
+            background: rgba(30, 30, 30, 0.95);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .chat-input-container.dark-mode {
+            background: rgba(40, 40, 40, 0.8);
+            border-top: 1px solid rgba(80, 80, 80, 0.5);
+        }
+
+        /* Toggle switch styles */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 3;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 50px;
+        }
+
+        .theme-switch input {
+            display:none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+        }
+
+        .slider:before {
+            background-color: white;
+            bottom: 4px;
+            content: "";
+            height: 16px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 16px;
+        }
+
+        input:checked + .slider {
+            background-color: #66bb6a;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #66bb6a;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* Dark mode send button */
+        body.dark-mode .send-button {
+            background: linear-gradient(135deg, #003cff 0%, #b700ff 100%);
+            box-shadow: 0 4px 12px rgba(255, 136, 0, 0.3);
+        }
+
+        body.dark-mode .send-button:hover {
+            box-shadow: 0 6px 20px rgba(255, 136, 0, 0.4);
+        }
+
+    @media (max-width: 600px) {
+        .chat-container {
+            height: 90vh;
+            margin: 10px;
+        }
+        
+        .message-content {
+            max-width: 85%;
+        }
+
+    }
+
+    /* Modern delete button styles */
+.profile-dropdown-content a button {
+    background: #ff4d4d; /* Red background for delete */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 10px; /* Space between text and button */
+}
+
+.profile-dropdown-content a button:hover {
+    background: #ff6666; /* Lighter red on hover */
+    box-shadow: 0 4px 8px rgba(255, 77, 77, 0.3); /* Add shadow effect */
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.profile-dropdown-content a button:active {
+    background: #cc0000; /* Darker red on click */
+    transform: translateY(0); /* Reset lift on click */
+    box-shadow: 0 2px 4px rgba(255, 77, 77, 0.2); /* Reduced shadow */
+}
+
+/* Modal background overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Show modal when active */
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal container */
+.modal {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Modal header */
+.modal h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+/* Input field */
+.modal input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.modal input:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+}
+
+/* Buttons */
+.modal button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal button.create {
+    background: #4caf50;
+    color: white;
+}
+
+.modal button.create:hover {
+    background: #45a049;
+}
+
+.modal button.cancel {
+    background: #f44336;
+    color: white;
+    margin-left: 10px;
+}
+
+.modal button.cancel:hover {
+    background: #e53935;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+</style>
+
+
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1> OffGrid AI</h1>
+            <p><span class="status-indicator"></span>Online & Ready to Help</p>
+            <button class="clear-chat-button" id="clearChatButton" aria-label="Clear chat" title="Clear chat">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 s6h18"></path>
+                    <path d="M19 6l-1 14H6L5 6"></path>
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                 Clear 
+        </div>
+        <div class="profile-dropdown">
+            <button class="profile-dropdown-button" id="profileDropdownButton" aria-label="Open profiles menu">
+                <span id="currentProfileDisplay">Select Profile</span>
+            </button>
+            <div class="profile-dropdown-content" id="profileDropdownContent">
+                <!-- Models will be populated here -->
+            </div>
+        </div>
+        <!-- Theme toggle switch -->
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <span class="slider round"></span>
+            </label>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <h3>Welcome to OffGrid AI!</h3>
+                <p>Start a conversation by typing a message below. I'm here to help with questions, provide information, or just have a friendly chat!</p>
+            </div>
+        </div>
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <textarea 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Type your message here..." 
+                    rows="1"
+                ></textarea>
+                <button class="send-button" id="sendButton" aria-label="Send message">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                    </svg>
+                </button>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Modal for creating a new profile -->
+    <div class="modal-overlay" id="createProfileModal">
+        <div class="modal">
+            <h3>Create New Profile</h3>
+            <input type="text" id="newProfileName" placeholder="Enter profile name" />
+            <div class="modal-buttons">
+                <button class="create" id="createProfileButton">Create</button>
+                <button class="cancel" id="cancelProfileButton">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let currentProfile = { name: 'gemma3', systemPrompt: '' }; // Default profile
+    document.getElementById('currentProfileDisplay').textContent = currentProfile.name; // Default text
+    // Handle Enter key for sending messages
+    document.getElementById('chatInput').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            document.getElementById('sendButton').click();
+        }
+    });
+
+    // Handle Send button click
+    document.getElementById('sendButton').addEventListener('click', async function() {
+        const input = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        const message = input.value.trim();
+        if (!message) return;
+
+        const chatMessages = document.getElementById('chatMessages');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Show typing indicator and set loading state for the button
+        typingIndicator.classList.add('visible');
+        sendButton.disabled = true;
+        sendButton.classList.add('loading');
+
+        // Display user message
+        const userMsgDiv = document.createElement('div');
+        userMsgDiv.className = 'message user';
+        userMsgDiv.innerHTML = `<div class="message-content">${message}</div>`;
+        chatMessages.appendChild(userMsgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        input.value = '';
+        input.focus();
+
+        try {
+            const messages = [{ role: "user", content: message }];
+            if (currentProfile.systemPrompt) {
+                messages.unshift({ role: "system", content: currentProfile.systemPrompt });
+            }
+
+            const response = await fetch('http://localhost:11434/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: currentProfile.name,
+                    messages: messages,
+                    stream: false
+                })
+            });
+
+            const data = await response.json();
+            const aiReply = data.message?.content || "No response from AI.";
+
+            // Hide typing indicator and reset button state
+            typingIndicator.classList.remove('visible');
+            sendButton.disabled = false;
+            sendButton.classList.remove('loading');
+
+            // Display bot message
+            const botMsgDiv = document.createElement('div');
+            botMsgDiv.className = 'message bot';
+            botMsgDiv.innerHTML = `<div class="message-content">${aiReply}</div>`;
+            chatMessages.appendChild(botMsgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        } catch (error) {
+            console.error("Fetch error:", error);
+
+            // Hide typing indicator and reset button state on error
+            typingIndicator.classList.remove('visible');
+            sendButton.disabled = false;
+            sendButton.classList.remove('loading');
+
+            const botMsgDiv = document.createElement('div');
+            botMsgDiv.className = 'message bot';
+            botMsgDiv.innerHTML = `<div class="message-content">Error: ${error.message}</div>`;
+            chatMessages.appendChild(botMsgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    });
+    // Add event listener for the clear chat button
+    document.getElementById('clearChatButton').addEventListener('click', function() {
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = `
+            <div class="welcome-message">
+                <h3>Welcome to AI Chat!</h3>
+                <p>Start a conversation by typing a message below. I'm here to help with questions, provide information, or just have a friendly chat!</p>
+            </div>
+        `;
+        document.getElementById('chatInput').value = '';
+        document.getElementById('chatInput').focus();
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileDropdownContent = document.getElementById('profileDropdownContent');
+        let profiles = JSON.parse(localStorage.getItem('profiles') || '[]');
+
+        // Function to save profiles to local storage
+        function saveProfiles() {
+            localStorage.setItem('profiles', JSON.stringify(profiles));
+        }
+
+        // Function to fetch and populate models
+        async function fetchModels() {
+            try {
+                const response = await fetch('http://localhost:11434/api/tags');
+                const data = await response.json();
+                console.log("Fetched models:", data); // Debugging
+
+                // Clear existing options
+                profileDropdownContent.innerHTML = '';
+
+                // Add existing profiles from local storage
+                profiles.forEach(profile => {
+                    addProfileToDropdown(profile);
+                });
+
+                // Add "Create New Profile" option
+                const createNewProfileLink = document.createElement('a');
+                createNewProfileLink.href = '#';
+                createNewProfileLink.textContent = '+ Create New Profile';
+                createNewProfileLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const newProfileName = prompt('Enter new profile name:');
+                    if (newProfileName) {
+                        if (!profiles.includes(newProfileName)) {
+                            profiles.push(newProfileName);
+                            saveProfiles();
+                            addProfileToDropdown(newProfileName);
+                        } else {
+                            alert('Profile name already exists.');
+                        }
+                    }
+                });
+                profileDropdownContent.appendChild(createNewProfileLink);
+
+                // Populate models from API
+                data.models.forEach(model => {
+                    let modelName = model.name;
+                    // Remove colon and everything after it
+                    if (modelName.includes(':')) {
+                        modelName = modelName.substring(0, modelName.indexOf(':'));
+                    }
+                    // Remove "Bot" from the model name if it exists
+
+                    if (!profiles.includes(modelName)) {
+                        addProfileToDropdown(modelName);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching models:', error);
+                profileDropdownContent.innerHTML = '<p>Error loading profiles.</p>';
+            }
+        }
+
+        function addProfileToDropdown(modelName) {
+            const a = document.createElement('a');
+            a.href = '#';
+            a.dataset.profile = modelName;
+            a.textContent = modelName;
+
+            // Add delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.style.marginLeft = '10px';
+            deleteButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation(); // Prevent profile selection
+
+                // Confirm deletion
+                if (confirm(`Are you sure you want to delete profile ${modelName}?`)) {
+                    removeProfile(modelName); // Call function to remove profile
+                    a.remove();
+                }
+            });
+            a.appendChild(deleteButton);
+
+            a.addEventListener('click', function(event) {
+                event.preventDefault();
+                const profile = this.dataset.profile;
+                currentProfile = { name: profile, systemPrompt: '' }; // Update the currentProfile variable
+                document.getElementById('currentProfileDisplay').textContent = profile; // Update the displayed profile
+                console.log(`Profile selected: ${profile}`); // Log the selected profile
+                profileDropdownContent.style.display = 'none';
+            });
+            profileDropdownContent.appendChild(a);
+        }
+
+        function removeProfile(modelName) {
+            profiles = profiles.filter(profile => profile !== modelName);
+            saveProfiles();
+        }
+
+        fetchModels();
+
+        document.getElementById('profileDropdownButton').addEventListener('click', function(event) {
+            event.stopPropagation();
+            profileDropdownContent.style.display = profileDropdownContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.profile-dropdown')) {
+                profileDropdownContent.style.display = 'none';
+            }
+        });
+    });
+
+    // JavaScript to toggle dark mode
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkbox = document.getElementById('checkbox');
+        const body = document.body;
+        const chatContainer = document.querySelector('.chat-container');
+        const chatInputContainer = document.querySelector('.chat-input-container');
+        const chatMessages = document.querySelector('.chat-messages');
+        const chatHeader = document.querySelector('.chat-header');
+
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            body.classList.toggle('dark-mode');
+            chatContainer.classList.toggle('dark-mode');
+            chatInputContainer.classList.toggle('dark-mode');
+            chatMessages.classList.toggle('dark-mode');
+            chatHeader.classList.toggle('dark-mode');
+
+            // Store the user's preference in localStorage
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        // Check if dark mode was previously enabled
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            checkbox.checked = true;
+            toggleDarkMode(); // Apply dark mode on page load
+        }
+
+        // Event listener for the checkbox
+        checkbox.addEventListener('change', toggleDarkMode);
+    });
+    </script>
+</body>
+</html>
+
 
